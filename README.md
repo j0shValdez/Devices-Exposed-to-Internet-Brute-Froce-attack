@@ -5,9 +5,7 @@
 
 _**Project Overview**_:
 
-In this threat hunting lab, I investigated a Windows Virtual Machine (VM) (windows-target-1) that was unintentionally exposed to the internet, using Microsoft Defender for Endpoint. I developed a hypothesis that brute-force 
-login attempts may have occurred and used KQL to analyze logon activity. My investigation revealed multiple failed login attempts from suspicious external IP addresses, but no signs of successful unauthorized access. As a 
-result, I recommended and implemented stronger access controls, including restricting RDP access, updating Network Security Group (NSG) rules, and enabling account lockout policies to prevent future exposure and attacks.
+In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`windows-target-1`) that was unintentionally exposed to the internet, using **Microsoft Defender for Endpoint**. I developed a hypothesis that **brute-force login attempts** may have occurred and used **KQL** to analyze logon activity. My investigation revealed multiple failed login attempts from suspicious external IP addresses, but no signs of successful unauthorized access. As a result, I recommended and implemented stronger access controls, including **restricting RDP access**, updating **Network Security Group (NSG) rules**, and **enabling account lockout policies** to prevent future exposure and attacks.
 
 > **Hypothesis:** During the time the device was unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into it, especially since some older devices lacked account lockout policies for excessive failed login attempts.
 ---
@@ -33,20 +31,21 @@ result, I recommended and implemented stronger access controls, including restri
 - [Documentation Phase](#documentation-phase)
 - [Improvement Phase](#improvement-phase)
 - [Summary](#summary)
-- [Technologies Used](#technologies-used)
-- [Skills Highlighted](#skills-highlighted)
 
 ---
 
 ## Preparation Phase
 
-- Defined a clear objective and hypothesis.
-- Targeted investigation at exposed devices.
+- **Defined a clear objective and hypothesis**
+  - **Hypothesis:** During the time the device was unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into it, especially since some older devices lacked account lockout policies for excessive failed login attempts.
+- **Targeted investigation at exposed devices**
+  - (`DeviceName`) == (`windows-target-1`)
 
 ---
 
 ## Data Collection Phase
 
+- During this phase, I gathered relevent data from logs, network traffic, and endpoints. I inspected the logs to see which devices have been exposed to the internet and have received eessive ailed lonin attempts.
 - Collected data from:
   - `DeviceInfo`
   - `DeviceLogonEvents`
@@ -58,16 +57,17 @@ result, I recommended and implemented stronger access controls, including restri
 
 **Queries and Key Findings:**
 
-- **Internet Exposure Check:**
+- **Internet Exposure Check:** This query retrieves all records from the DeviceInfo table for windows-target-1 where it’s marked as internet-facing, then sorts those entries by timestamp (newest first). It shows exactly when—and for how long—the VM was exposed to external networks.
+
   ```kusto
   DeviceInfo
   | where DeviceName == "windows-target-1"
   | where IsInternetFacing == "true"
   | order by Timestamp desc
   ```
-  > Finding: `windows-target-1` was exposed up until `2025-04-25T17:28:30Z`.
+  > Finding: `windows-target-1` was exposed to the internet for over one week and up until current time : `2025-04-25T17:28:30Z`.
 
-- **Failed Logon Attempts:**
+- **Failed Logon Attempts:** I wanted to see how many attempts have been made to the target machine. The query identifies and counts failed login attempts to the target machine by various bad actors, filtering by logon types such as "Network," "Interactive," "RemoteInteractive," and "Unlock," and summarizing the attempts by RemoteIP. The results are ordered by the number of attempts.  
   ```kusto
   DeviceLogonEvents
   | where DeviceName == "windows-target-1"
@@ -77,9 +77,17 @@ result, I recommended and implemented stronger access controls, including restri
   | summarize Attempts = count() by ActionType, RemoteIP, DeviceName
   | order by Attempts
   ```
-  > Finding: IP `197.210.194.246` failed login 65 times.
+  <p align="center">
+  <img src="https://github.com/user-attachments/assets/a390c103-100b-4105-a12d-2515ad7862d3" />
+</p>
 
-- **Successful Logon Attempts:**
+   > **Finding**: Several bad actors have been discovere attempting to login to the target machine. The IP `197.210.194.246` attempted to brute-force the machine 65 times. You can see a number of other IPs attempting to login to (`windows-target-1`)
+
+
+
+
+- **Successful Logon Attempts:** Based on the above failled attempts, I wanted to see if any of those IPs have successfully logined into the exposed machine. This query defines a list of the top five IPs with the highest failed login counts, then checks the `DeviceLogonEvents` table for any successful logons from those same IPs on `windows-target-1`. It’s used to verify whether any of the top brute-force offenders ever managed to gain access.
+  
   ```kusto
   let RemoteIPsInQuestion = dynamic(["197.210.194.240","135.125.90.97","180.193.221.205","118.107.40.165","178.20.129.235"]);
   DeviceLogonEvents
@@ -88,16 +96,39 @@ result, I recommended and implemented stronger access controls, including restri
   | where ActionType == "LogonSuccess"
   | where RemoteIP has_any(RemoteIPsInQuestion)
   ```
-  > Finding: No successful unauthorized logins.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/50c552e3-b7f4-49f5-812c-0ed1935630f2"/>
+</p>
 
-- **Legitimate Logons:**
+  > Finding: No results were returned, indicating that none of the top five IPs with the most failed login attempts ever achieved a successful login to `windows-target-1`. This confirms that, despite repeated brute-force attempts, the VM remained secure against those specific sources.
+
+
+
+
+- **Legitimate Logons:** Now I wanted to see if there were any successful logons and who who logged on. The first query fetched all successful logon events for `windows-target-1`, showing which accounts had accessed the VM over the previous 30 days. The second query fetches the number of failled logons for the authroize accounts. By reviewing these legitimate logons, I confirmed that no unexpected or unauthorized access occurred during the exposure period. A brute force attempt did not take place, and a 1-time password guess is unlikeley. 
+
   ```kusto
   DeviceLogonEvents
   | where DeviceName == "windows-target-1"
   | where ActionType == "LogonSuccess"
-  | where AccountName in ("umfd-1", "dwm-1", "umfd-0", "dwm-0")
   ```
-  > Finding: Only legitimate system accounts logged in.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e080db58-6f06-4b45-b652-929b3a224204" />
+</p>
+
+ ```kusto
+  DeviceLogonEvents
+  | where DeviceName == "windows-target-1"
+  | where ActionType == "LogonSuccess"
+  | where AccountName in ("umfd-1", "dwm-1", "umfd-0", "dwm-0")
+
+  ```
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/50c552e3-b7f4-49f5-812c-0ed1935630f2"/>
+</p>
+
+  > Finding: Only legitimate authorized accounts logged in. Those accounts had zero (0) failed logons.  Accounts: "umfd-1", "dwm-1", "umfd-0", "dwm-0"
+
 
 ---
 
@@ -146,22 +177,6 @@ result, I recommended and implemented stronger access controls, including restri
 The VM was exposed to the internet and faced multiple brute-force login attempts, but no successful unauthorized access was identified. This project demonstrated the value of structured threat hunting, proactive security measures, and the importance of continuous improvement.
 
 
----
 
-## Skills Highlighted
 
-- Threat Hunting Methodology
-- Log Collection and Analysis
-- Brute Force Attack Detection
-- KQL Scripting
-- Network Security Hardening
-- Incident Documentation and Response
 
----
-
-> **Note:** This lab is part of my hands-on cybersecurity analyst training projects to develop threat detection and incident response skills.
-
----
-
-### Connect with Me
-- [LinkedIn Profile](#) *(Insert your LinkedIn link here)*
