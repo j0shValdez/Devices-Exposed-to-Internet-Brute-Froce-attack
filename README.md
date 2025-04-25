@@ -1,15 +1,24 @@
-# Threat Hunting Lab: Identifying Brute Force Attempts on Exposed VM
+# Threat Hunting: Identifying Brute Force Attempts on Exposed VM
 
-![Threat Hunting](https://img.shields.io/badge/Threat_Hunting-Completed-success?style=flat&logo=github)
-![Azure Sentinel](https://img.shields.io/badge/Microsoft_Sentinel-Log_Analysis-blue?style=flat&logo=microsoft)
-
-## Project Overview
+_**Project Overview**_:
 
 During this lab, I conducted a threat hunt on a VM (`windows-target-1`) that was unintentionally exposed to the internet.
+
 
 **Objective:** Investigate potential brute-force login attempts and validate whether any unauthorized access occurred.
 
 > **Hypothesis:** During the time the devices were unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into some of them, especially since some older devices lacked account lockout policies for excessive failed login attempts.
+---
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c7c19510-a053-419c-a6ff-96b3c80082c3" width="500" height="500" />
+</p>
+
+
+# Technologies Utilized
+- **Microsoft Defener for Endpoint (MDE)**
+- **Kusto Query Lnguage (KQL)**
+- **Virtual Machin (VM): Windows OS**
+- **Microsoft Azure**
 
 ---
 
