@@ -1,13 +1,15 @@
-# Threat Hunting: Identifying Brute Force Attempts on Exposed VM
+# Threat Hunting: Identifying Brute Force Attempts on Exposed VM 
+<p align="center">
+  ** IN PROGRESS **
+</p>
 
 _**Project Overview**_:
 
-During this lab, I conducted a threat hunt on a VM (`windows-target-1`) that was unintentionally exposed to the internet.
+In this threat hunting lab, I investigated a Windows Virtual Machine (VM) (windows-target-1) that was unintentionally exposed to the internet, using Microsoft Defender for Endpoint. I developed a hypothesis that brute-force 
+login attempts may have occurred and used KQL to analyze logon activity. My investigation revealed multiple failed login attempts from suspicious external IP addresses, but no signs of successful unauthorized access. As a 
+result, I recommended and implemented stronger access controls, including restricting RDP access, updating Network Security Group (NSG) rules, and enabling account lockout policies to prevent future exposure and attacks.
 
-
-**Objective:** Investigate potential brute-force login attempts and validate whether any unauthorized access occurred.
-
-> **Hypothesis:** During the time the devices were unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into some of them, especially since some older devices lacked account lockout policies for excessive failed login attempts.
+> **Hypothesis:** During the time the device was unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into it, especially since some older devices lacked account lockout policies for excessive failed login attempts.
 ---
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c7c19510-a053-419c-a6ff-96b3c80082c3" width="500" height="500" />
@@ -143,14 +145,6 @@ During this lab, I conducted a threat hunt on a VM (`windows-target-1`) that was
 
 The VM was exposed to the internet and faced multiple brute-force login attempts, but no successful unauthorized access was identified. This project demonstrated the value of structured threat hunting, proactive security measures, and the importance of continuous improvement.
 
----
-
-## Technologies Used
-
-- Microsoft Sentinel (Azure SIEM)
-- Microsoft Defender for Endpoint (MDE)
-- Kusto Query Language (KQL)
-- Windows Server 2019
 
 ---
 
