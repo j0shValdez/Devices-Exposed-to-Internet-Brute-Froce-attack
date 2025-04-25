@@ -57,7 +57,7 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 **Queries and Key Findings:**
 
-- **Internet Exposure Check:** This query retrieves all records from the DeviceInfo table for windows-target-1 where it’s marked as internet-facing, then sorts those entries by timestamp (newest first). It shows exactly when—and for how long—the VM was exposed to external networks.
+- **Internet Exposure Check:** This query retrieves all records from the `DeviceInfo` table for `windows-target-1` where it’s marked as internet-facing, then sorts those entries by timestamp (newest first). It shows exactly when—and for how long—the VM was exposed to external networks.
 
   ```kusto
   DeviceInfo
