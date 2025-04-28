@@ -115,7 +115,7 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 
 
-- **Legitimate Logons:** Now I wanted to see if there were any successful logons and who logged on. The first query fetched all successful logon events for `windows-target-1`, showing which accounts had accessed the VM over the previous 30 days. The second query fetches the number of failled logons for the authroize accounts. By reviewing these legitimate logons, I confirmed that no unexpected or unauthorized access occurred during the exposure period. A brute force attempt did not take place, and a 1-time password guess is unlikeley. 
+- **Legitimate Logons:** Now I wanted to see if there were any successful logons and who logged on. The first query fetched all successful logon events for `windows-target-1`, showing which accounts had accessed the VM over the previous 30 days. The second query fetches the number of failled logons for the authroized accounts. By reviewing these legitimate logons, I confirmed that no unexpected or unauthorized access occurred during the exposure period. A brute force attempt did not take place, and a 1-time password guess is unlikeley. 
 
   ```kusto
   DeviceLogonEvents
