@@ -168,38 +168,62 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 During the investigation, it was comfirmed that the machine in question had been unintentionally exposed to the public internet. While this exposure was intentional for the purposes of this lab, in a real-world scenario, virtual machines should never be publically accessile without strict security controls. 
 
-To remediate the exposure and reduce the attack surface, I implemented several critical security measure:
+To remediate the exposure and reduce the attack surface, I simulated the implementation of several critical security measure:
 - **Hardened the Network Security Group (NSG):**
-  - f
-- Implemented Account Lokout Policies
-- Implemented Multi-Factor Authenication (MFA) 
+  - Restrict inbound Remomte Desktop Protocol (RDP) traffic to trusted IP addresses only (no open RDP to the public internet)
+  - Go to **Azure Portal** → **Virtual Machines** → Select **windows-target-1**.
+    - Navigated to the **Networking** tab.
+    - Under **Network Settings**, located the attached **Network Security Group (NSG)**.
+    - Add a new inbound security rule:
+      - **Destination Port:** 3389 (RDP)
+      - **Source IP Addresses:** Only allowed trusted internal IP(s).
+      - **Action:** Allow
+      - **Priority:** Lower than the default deny rule (e.g., priority 300).
+  - Deleted or disabled any existing rules allowing RDP access from **Any** (`0.0.0.0/0`).
 
+- **Implemented Account Lokout Policies:**
+  - Prevent brute-force attacks by locking accounts after a set number of failed login attempts
+  - On the VM (Windows Server):
+  - Opened **Group Policy Editor** (`gpedit.msc`) and navigated to:
+    - **Computer Configuration** → **Windows Settings** → **Security Settings** → **Account Policies** → **Account Lockout Policy**.
+  - Configured the following:
+    - **Account lockout threshold:** (4 invalid attempts)
+    - **Account lockout duration:** (10 minutes)
+    - **Reset account lockout counter after:** (10 minutes)
+    - **Allow Administrator account lockout:** Enabled (recommended for stronger security)
+  - Apply and refresh Group Policy.
+  - ![image](https://github.com/user-attachments/assets/6f79952d-fdc1-4347-8187-9a529aaf9dd4)
+
+- **Implemented Multi-Factor Authenication (MFA):**
+  - Strengthen login security by requiring a second form of authentication
+  - I logged into the Azure Portal and navigated to **Entra ID** (formerly Azure AD).
+    - Under **Security**, I selected **Conditional Access** and clicked **+ New policy**.
+    - I targeted the appropriate **users/groups** and added **Azure Management** under **Cloud apps**.
+    - In **Access controls**, I chose **Require multi-factor authentication**.
+  - I enabled the policy and verified that MFA was enforced on all login attempts for `windows-target-1`.
 
 ---
 
 ## Documentation Phase
 
-- Documented:
-  - Hypothesis
-  - Queries used
-  - Key findings
-  - Response actions
+- Recorded my findings above.
+- Documented what I found and used it to improve future hunts and defenses.
+  - Saved all KQL queries, screenshots, and timelines in a dedicated “Threat Hunt” folder.
+  - Summarized the exposure window, brute-force IPs, successful logons, and TTPs above.
 
 ---
 
 ## Improvement Phase
 
-**Lessons Learned:**
-
-- Perform proactive internet exposure audits.
-- Harden default configurations.
-- Enforce security policies like lockout thresholds and MFA.
-
+- **Lessons Learned:** Documented what worked and what didn’t.  
+- **Detection Tuning:** Built/updated Sentinel analytics rules to alert on repeated failed logins to any internet-facing VM.  
+- **Automation:** Scripted NSG exposure audits and lockout-policy checks using Azure Policy and PowerShell.  
+- **Future Hypotheses:** Identified additional scenarios (e.g., credential stuffing, lateral movement) to expand the hunt library.
 ---
 
 ## Summary
 
-The VM was exposed to the internet and faced multiple brute-force login attempts, but no successful unauthorized access was identified. This project demonstrated the value of structured threat hunting, proactive security measures, and the importance of continuous improvement.
+In this threat hunting project, I investigated a Windows VM (windows-target-1) that was unintentionally exposed to the internet, using Microsoft Defender for Endpoint (MDE) and KQL. My hypothesis was that brute-force login attempts might have occurred, and I used KQL queries to analyze login activity. The investigation revealed multiple failed login attempts from suspicious external IP addresses but no successful unauthorized access. Based on these findings, I recommended and simulated the implementation of stronger security measures, including restricting RDP access, updating Network Security Group (NSG) rules, enabling account lockout policies, and enforcing Multi-Factor Authentication (MFA) for enhanced security.
 
 
 
