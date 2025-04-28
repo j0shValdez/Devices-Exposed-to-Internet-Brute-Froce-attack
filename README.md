@@ -15,7 +15,7 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 
 # Technologies Utilized
-- **Microsoft Defener for Endpoint (MDE)**
+- **Endpoint Detection and Response (ERD): Microsoft Defener for Endpoint (MDE)**
 - **Kusto Query Lnguage (KQL)**
 - **Virtual Machin (VM): Windows OS**
 - **Microsoft Azure**
