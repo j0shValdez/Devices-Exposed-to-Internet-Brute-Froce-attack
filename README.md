@@ -1,6 +1,5 @@
 # Threat Hunting: Identifying Brute Force Attempts on Exposed VM 
 <p align="center">
-  ** IN PROGRESS **
 </p>
 
 _**Project Overview**_:
