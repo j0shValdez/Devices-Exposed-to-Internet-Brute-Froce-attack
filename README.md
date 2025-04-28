@@ -166,10 +166,14 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 ## Response Phase
 
-- Hardened NSG rules to restrict RDP access.
-- Recommended implementing:
-  - Account lockout policies.
-  - Multi-Factor Authentication (MFA).
+During the investigation, it was comfirmed that the machine in question had been unintentionally exposed to the public internet. While this exposure was intentional for the purposes of this lab, in a real-world scenario, virtual machines should never be publically accessile without strict security controls. 
+
+To remediate the exposure and reduce the attack surface, I implemented several critical security measure:
+- **Hardened the Network Security Group (NSG):**
+  - f
+- Implemented Account Lokout Policies
+- Implemented Multi-Factor Authenication (MFA) 
+
 
 ---
 
