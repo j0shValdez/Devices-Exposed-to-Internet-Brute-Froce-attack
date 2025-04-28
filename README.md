@@ -144,12 +144,23 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 ## Investigation Phase
 
-- Brute-force attempts identified.
+- Based on the data collected and analyzed, brute-force attempts were identified on the exposed machine. Although no unauthorized access was confirmed several MITRE ATT&CK techniques were relevant to the findings.
 - No unauthorized access confirmed.
-- Linked findings to MITRE ATT&CK tactics:
+- Linked findings to **MITRE ATT&CK** tactics:
   - **T1190** - Exploit Public-Facing Application
+    - Adversaries attempt to exploite weaknesses in the internet-facing systems or services to gain unauthroized access. The VM in question was unintentionally exposed to the internet, increasing the risks of external explitation.
+    - ![image](https://github.com/user-attachments/assets/e89b5727-6dde-425f-b569-f68413984328)
+
   - **T1110** - Brute Force
+    - Adversaries try to guess valid creentials through repeate login attempts. Numberous failed login attempts were detected from multiple external IPs, fitting the brute-force attack pattern.
+    - ![image](https://github.com/user-attachments/assets/fab6042a-d3f5-4064-a325-115fc10381d6)
+
   - **T1078** - Valid Accounts
+    - Adversaries may leverage valid credentials to access systems. Althrough multiple brute-force attemtps occured in the above threat hunt, no unauthorized successful logins were found. Only legitimate logons were observed indicating no account compromise.
+
+    - ![image](https://github.com/user-attachments/assets/0ec92136-b3fb-4bb8-a8d4-312a08cadf7d)
+
+
 
 ---
 
