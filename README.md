@@ -38,14 +38,24 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 - **Defined a clear objective and hypothesis**
   - **Hypothesis:** During the time the device was unknowingly exposed to the internet, it’s possible that someone could have brute-force logged into it, especially since some older devices lacked account lockout policies for excessive failed login attempts.
+  - **Objective:** Investigate whether any unauthorized or suspicious logon activity occure on the exposed machine while it was unintentionaly accessible from the internet.
 - **Targeted investigation at exposed devices**
   - (`DeviceName`) == (`windows-target-1`)
 
+- **Why defining a clear objective and hypothesis is important**:
+  - Having a clear objective and hypothesis in threat hunting ensures that the investigation is focused, efficient, and evidence-driven. Without a defined starting point, threat hunting efforts can become random and disorganized, wasting time and resources. A well-crafted hypothesis helps guide the search for potential threats based on actual risks or behaviors observed in the environment. Threat hunting can be approached in many ways but a generalized process usually looks like:
+    - Create Hypotheses
+    - Investigation
+    - TTPs Identification
+    - Resonse and Mitigation
+    - Learning and Immproving
+
+  
 ---
 
 ## Data Collection Phase
 
-- During this phase, I gathered relevent data from logs, network traffic, and endpoints. I inspected the logs to see which devices have been exposed to the internet and have received eessive ailed lonin attempts.
+- During this phase, I gathered relevent data from logs, network traffic, and endpoints. I inspected the logs to see which devices have been exposed to the internet and have received exssive failed lonin attempts.
 - Collected data from:
   - `DeviceInfo`
   - `DeviceLogonEvents`
@@ -105,7 +115,7 @@ In this threat hunting lab, I investigated a **Windows Virtual Machine (VM)** (`
 
 
 
-- **Legitimate Logons:** Now I wanted to see if there were any successful logons and who who logged on. The first query fetched all successful logon events for `windows-target-1`, showing which accounts had accessed the VM over the previous 30 days. The second query fetches the number of failled logons for the authroize accounts. By reviewing these legitimate logons, I confirmed that no unexpected or unauthorized access occurred during the exposure period. A brute force attempt did not take place, and a 1-time password guess is unlikeley. 
+- **Legitimate Logons:** Now I wanted to see if there were any successful logons and who logged on. The first query fetched all successful logon events for `windows-target-1`, showing which accounts had accessed the VM over the previous 30 days. The second query fetches the number of failled logons for the authroize accounts. By reviewing these legitimate logons, I confirmed that no unexpected or unauthorized access occurred during the exposure period. A brute force attempt did not take place, and a 1-time password guess is unlikeley. 
 
   ```kusto
   DeviceLogonEvents
